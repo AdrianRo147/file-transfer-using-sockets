@@ -31,7 +31,7 @@ struct Client client_constructor(int domain, int service, int protocol, u_long i
 
     if (connect(client.socket, (struct sockaddr*)&client.address, sizeof(client.address)) < 0)
     {
-        perror("Failed connecting to socket");
+        perror("Failed connecting to socket\n");
         close(client.socket);
         exit(1);
     }
