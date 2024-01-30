@@ -8,7 +8,7 @@
 
 void launch(struct Client *client)
 {
-    FILE *file = fopen("test.txt", "wb");
+    FILE *file = fopen("test.txt", "wb"); // change filename with name to be saved as
     char buffer[1024];
     ssize_t bytes;
 

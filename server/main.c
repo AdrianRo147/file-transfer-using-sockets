@@ -14,7 +14,7 @@ void *sendFile(void *arg)
 {
     int new_socket = *((int *)arg);
 
-    FILE *file = fopen("server.h", "rb");
+    FILE *file = fopen("server.h", "rb"); // change filename to filename you want to send
     if (!file)
     {
         perror("Cannot open file...\n");
