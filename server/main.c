@@ -6,10 +6,14 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include <arpa/inet.h>
 #include "server.h"
 
-void sendFile(struct Server *server)
+void *sendFile(void *arg)
 {
+    int new_socket = *((int *)arg);
+
     FILE *file = fopen("server.h", "rb");
     if (!file)
     {
@@ -23,7 +27,7 @@ void sendFile(struct Server *server)
 
     while ((bytesRead = fread(buffer, 1, 1024, file)) > 0)
     {
-        ssize_t bytesSent = send(server->socket, buffer, bytesRead, 0);
+        ssize_t bytesSent = send(new_socket, buffer, bytesRead, 0);
 
         if (bytesSent == -1)
         {
@@ -35,6 +39,7 @@ void sendFile(struct Server *server)
 
         if (totalBytesSend == fileSize)
         {
+            printf("File sent...\n");
             break;
         }
     }
@@ -42,18 +47,26 @@ void sendFile(struct Server *server)
     fclose(file);
 }
 
-void launch(struct Server *server) // TODO: program exits after file is sent
+void launch(struct Server *server)
 {
     int new_socket;
-    int address_length = sizeof(server->adress);
+    int address_length = sizeof(server->address);
 
-    printf("====== WAITING FOR CONNECTION ======\n");
-    new_socket = accept(server->socket, (struct sockaddr *)&server->adress, (socklen_t *)&address_length);
+    while (1)
+    {
+        printf("====== WAITING FOR CONNECTION ======\n");
+        new_socket = accept(server->socket, (struct sockaddr *) &server->address, (socklen_t *) &address_length);
 
-    sendFile(server);
-    printf("File sent...\n");
+        printf("File sent to %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port));
 
-    close(new_socket);
+        pthread_t thread; // needed for handling multiple connections
+        if (pthread_create(&thread, NULL, sendFile, &new_socket) != 0)
+        {
+            perror("Error creating thread...\n");
+            close(new_socket);
+            exit(1);
+        }
+    }
 }
 
 int main() {
