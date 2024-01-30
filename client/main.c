@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include "client.h"
 
+#define PORT 8888
+
 void launch(struct Client *client)
 {
     FILE *file = fopen("test.txt", "wb"); // change filename with name to be saved as
@@ -33,7 +35,7 @@ void launch(struct Client *client)
 
 int main()
 {
-    struct Client client = client_constructor(AF_INET, SOCK_STREAM, 0, INADDR_ANY, 8888, launch);
+    struct Client client = client_constructor(AF_INET, SOCK_STREAM, 0, INADDR_ANY, PORT, launch);
     client.launch(&client);
     return 0;
 }

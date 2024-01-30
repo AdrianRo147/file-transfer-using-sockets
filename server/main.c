@@ -10,6 +10,8 @@
 #include <arpa/inet.h>
 #include "server.h"
 
+#define PORT 8888
+
 void *sendFile(void *arg)
 {
     int new_socket = *((int *)arg);
@@ -70,6 +72,6 @@ void launch(struct Server *server)
 }
 
 int main() {
-    struct Server server = server_constructor(AF_INET, SOCK_STREAM, 0, INADDR_ANY, 8888, 10, launch);
+    struct Server server = server_constructor(AF_INET, SOCK_STREAM, 0, INADDR_ANY, PORT, 10, launch);
     server.launch(&server);
 }
