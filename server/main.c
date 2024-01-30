@@ -8,36 +8,55 @@
 #include <stdlib.h>
 #include "server.h"
 
-void launch(struct Server *server)
+void sendFile(struct Server *server)
 {
-    char buffer[1024];
-    char *fileName = "server.h";
-    FILE *file;
-    file = fopen(fileName, "r");
-
-    if (file == NULL)
+    FILE *file = fopen("server.h", "rb");
+    if (!file)
     {
         perror("Cannot open file...\n");
         exit(1);
     }
 
-    size_t fileSize = fread(buffer, 1, sizeof(buffer), file);
+    size_t fileSize = ftell(file);
+    char buffer[1024];
+    size_t bytesRead, totalBytesSend = 0;
+
+    while ((bytesRead = fread(buffer, 1, 1024, file)) > 0)
+    {
+        ssize_t bytesSent = send(server->socket, buffer, bytesRead, 0);
+
+        if (bytesSent == -1)
+        {
+            perror("Error occured while sending file...\n");
+            exit(1);
+        }
+
+        totalBytesSend += bytesSent;
+
+        if (totalBytesSend == fileSize)
+        {
+            break;
+        }
+    }
+
+    fclose(file);
+}
+
+void launch(struct Server *server) // TODO: program exits after file is sent
+{
     int new_socket;
     int address_length = sizeof(server->adress);
 
-    while (1) // server need to be running in endless loop
-    {
-        printf("====== WAITING FOR CONNECTION ======\n");
-        new_socket = accept(server->socket, (struct sockaddr *)&server->adress, (socklen_t *)&address_length);
-        read(new_socket, buffer, 1024);
-        printf("%s\n", buffer);
-        send(new_socket, buffer, fileSize, 0);
-        close(new_socket);
-        fclose(file);
-    }
+    printf("====== WAITING FOR CONNECTION ======\n");
+    new_socket = accept(server->socket, (struct sockaddr *)&server->adress, (socklen_t *)&address_length);
+
+    sendFile(server);
+    printf("File sent...\n");
+
+    close(new_socket);
 }
 
 int main() {
-    struct Server server = server_constructor(AF_INET, SOCK_STREAM, 0, INADDR_ANY, 8888, 10, &launch);
+    struct Server server = server_constructor(AF_INET, SOCK_STREAM, 0, INADDR_ANY, 8888, 10, launch);
     server.launch(&server);
 }
