@@ -56,7 +56,6 @@ void launch(struct Server *server)
 
     while (1)
     {
-        printf("====== WAITING FOR CONNECTION ======\n");
         new_socket = accept(server->socket, (struct sockaddr *) &server->address, (socklen_t *) &address_length);
 
         printf("File sent to %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port));

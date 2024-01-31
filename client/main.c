@@ -27,7 +27,7 @@ void launch(struct Client *client)
         perror("Error occured while receiving data\n");
     }
 
-    printf("Successfully downloaded");
+    printf("Successfully downloaded\n");
 
     fclose(file);
     close(client->socket);
