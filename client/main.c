@@ -35,7 +35,7 @@ void launch(struct Client *client)
 
 int main()
 {
-    struct Client client = client_constructor(AF_INET, SOCK_STREAM, 0, INADDR_ANY, PORT, launch);
+    struct Client client = client_constructor(AF_INET, SOCK_STREAM, 0, PORT, launch);
     client.launch(&client);
     return 0;
 }
