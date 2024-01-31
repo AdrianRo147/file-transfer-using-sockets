@@ -6,20 +6,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 
-struct Client client_constructor(int domain, int service, int protocol, u_long interface, int port, void (*launch)(struct Client *client))
+#define IP_ADDRESS "127.0.0.1"
+
+struct Client client_constructor(int domain, int service, int protocol, int port, void (*launch)(struct Client *client))
 {
     struct Client client;
 
     client.domain = domain;
     client.service = service;
     client.protocol = protocol;
-    client.interface = interface;
     client.port = port;
 
     client.address.sin_family = domain;
     client.address.sin_port = htons(port);
-    client.address.sin_addr.s_addr = htonl(interface);
+
+    if (inet_pton(AF_INET, IP_ADDRESS, &client.address.sin_addr) <= 0)
+    {
+        perror("Cannot set IP...\n");
+        exit(1);
+    }
 
     client.socket = socket(domain, service, protocol);
 

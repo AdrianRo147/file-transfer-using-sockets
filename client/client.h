@@ -10,7 +10,6 @@ struct Client
     int domain;
     int service;
     int protocol;
-    u_long interface;
     int port;
 
     struct sockaddr_in address;
@@ -20,4 +19,4 @@ struct Client
     void (*launch)(struct Client *client);
 };
 
-struct Client client_constructor(int domain, int service, int protocol, u_long interface, int port, void(*launch)(struct Client *client));
+struct Client client_constructor(int domain, int service, int protocol, int port, void(*launch)(struct Client *client));
