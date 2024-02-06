@@ -5,15 +5,19 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include "client.h"
 
 #define PORT 8888
+#define AUTH_KEY "YOUR_AUTH_KEY"
 
 void launch(struct Client *client)
 {
     FILE *file = fopen("test.txt", "wb"); // change filename with name to be saved as
     char buffer[1024];
     ssize_t bytes;
+
+    send(client->socket, AUTH_KEY, strlen(AUTH_KEY), 0);
 
     while((bytes = recv(client->socket, buffer, 1024, 0)) > 0)
     {

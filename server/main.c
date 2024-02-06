@@ -11,6 +11,7 @@
 #include "server.h"
 
 #define PORT 8888
+#define AUTH_KEY "YOUR_AUTH_KEY"
 
 void *sendFile(void *arg)
 {
@@ -57,6 +58,15 @@ void launch(struct Server *server)
     while (1)
     {
         new_socket = accept(server->socket, (struct sockaddr *) &server->address, (socklen_t *) &address_length);
+
+        char authKey[1024];
+        recv(new_socket, authKey, sizeof(authKey), 0);
+
+        if(strcmp(authKey, AUTH_KEY) != 0)
+        {
+            fprintf(stderr, "Invalid key %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port);
+            exit(1);
+        }
 
         printf("File sent to %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port));
 
