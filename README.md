@@ -3,10 +3,8 @@
 [![build](https://github.com/AdrianRo147/file-transfer-using-sockets/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/AdrianRo147/file-transfer-using-sockets/actions/workflows/cmake-single-platform.yml)
 
 ## Configuration
-You can change port in main.c files on line with
-`#define PORT 8888`
-but make sure to change it for both client and server, otherwise you won't connect to your socket
-
+- Port in main.c (client and server) `#define PORT`
+- IP in server.c and client.c `#define IP_ADDRESS`
 
 ## Compile
 ```
