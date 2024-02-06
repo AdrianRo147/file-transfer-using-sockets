@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "client.h"
 
 #define PORT 8888
@@ -22,9 +23,10 @@ void launch(struct Client *client)
         }
     }
 
-    if (bytes < 0)
+    if (bytes <= 0)
     {
         perror("Error occured while receiving data\n");
+        exit(1);
     }
 
     printf("Successfully downloaded\n");
