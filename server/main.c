@@ -64,7 +64,7 @@ void launch(struct Server *server)
 
         if(strcmp(authKey, AUTH_KEY) != 0)
         {
-            fprintf(stderr, "Invalid key %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port);
+            fprintf(stderr, "Invalid key %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port));
             exit(1);
         }
 
