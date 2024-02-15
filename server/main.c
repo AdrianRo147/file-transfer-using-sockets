@@ -11,7 +11,6 @@
 #include "server.h"
 
 #define PORT 8888
-#define AUTH_KEY "YOUR_AUTH_KEY"
 
 void *sendFile(void *arg)
 {
@@ -55,22 +54,26 @@ void launch(struct Server *server)
     int new_socket;
     int address_length = sizeof(server->address);
 
+    const char* originalKey = "YOUR_AUTH_KEY"; // authentification key
+
     while (1)
     {
         new_socket = accept(server->socket, (struct sockaddr *) &server->address, (socklen_t *) &address_length);
 
-        char authKey[1024];
-        recv(new_socket, authKey, sizeof(authKey), 0);
+        char authKey[1024]; // used for storing auth key received from client
+        ssize_t recvBytes = recv(new_socket, authKey, sizeof(authKey), 0);
 
-        if(strcmp(authKey, AUTH_KEY) != 0)
+        authKey[recvBytes] = '\0'; // when sending from client to server the auth key doesn't have correctly null character at end for some reason
+
+        if (strcmp(authKey, originalKey) != 0 || strlen(authKey) != strlen(originalKey)) // compares if keys matches with strcmp and strlen
         {
-            fprintf(stderr, "Invalid key %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port));
+            fprintf(stderr, "Invalid key from client %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port));
             exit(1);
         }
 
         printf("File sent to %s:%d\n", inet_ntoa(server->address.sin_addr), ntohs(server->address.sin_port));
 
-        pthread_t thread; // needed for handling multiple connections
+        pthread_t thread; // threads needed for handling multiple connections
         if (pthread_create(&thread, NULL, sendFile, &new_socket) != 0)
         {
             perror("Error creating thread...\n");
